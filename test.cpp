@@ -6,13 +6,13 @@ typedef struct NODE
 	int m_data;
 	struct NODE* pNext;
 }NODE;
-NODE* Creat_Head();
-bool creat_list(NODE* p,int len);
-int len_list(NODE* p);
-void show_list(NODE* p);
-bool delete_list(NODE* p,int pos,int* num);
-void sort_list(NODE* p);
-void insert_list(NODE* p, int pos, int num);
+NODE* Creat_Head();//创建头节点
+bool creat_list(NODE* p,int len);//创建链表
+bool insert_list(NODE* p, int pos, int num);//插入
+bool delete_list(NODE* p,int pos,int* num);//删除链表
+bool sort_list(NODE* p);//排序
+int len_list(NODE* p);//计算长度
+void show_list(NODE* p);//显示链表
 void test01()
 {
 	int num;
@@ -20,37 +20,15 @@ void test01()
 	creat_list(p, 5);	
 	show_list(p);
 	printf("------------------\r\n");
-	//insert_list(p, 3,100);
-	//show_list(p);
-	//printf("------------------\r\n");
-	//delete_list(p,3,&num);
-	//show_list(p);
-	//printf("------------------\r\n");
+	insert_list(p, 3,100);
+	show_list(p);
+	printf("------------------\r\n");
+	delete_list(p,3,&num);
+	show_list(p);
+	printf("------------------\r\n");
 	sort_list(p);
 	show_list(p);
 	printf("------------------\r\n");
-}
-void test02()
-{
-	int num[5] = { 1,7,3,8,5 };
-	int i = 0, j = 0,change_num;
-	for (i = 0; i < 5; i++)
-	{
-		for (j = i+1; j < 5; j++)
-		{
-			if (num[i] < num[j])
-			{
-				change_num = num[j];
-				num[j] = num[i];
-				num[i] = change_num;
-			}
-
-		}
-	}
-	for (i = 0; i < 5; i++)
-	{
-		printf("%d\r\n",num[i]);
-	}
 }
 int main()
 {
@@ -71,7 +49,6 @@ NODE* Creat_Head()
 }
 bool creat_list(NODE* p,int len)
 {
-	int num[5] = { 5,2,6,6,7 };
 	for (int i = 0; i < len; i++)
 	{
 		NODE* temp=(NODE*)malloc(sizeof(NODE));
@@ -80,7 +57,7 @@ bool creat_list(NODE* p,int len)
 			printf("创建内存失败\r\n");
 			exit(-1);
 		}
-		temp->m_data = num[i];
+		temp->m_data = rand()%10;
 		temp->pNext = NULL;
 		p->pNext = temp;
 		p = p->pNext;
@@ -126,13 +103,14 @@ bool delete_list(NODE* p,int pos,int* num)//pos从1开始,差个存储数据
 	temp = NULL;
 	return 1;
 }
-void insert_list(NODE* p, int pos, int num)
+bool insert_list(NODE* p, int pos, int num)
 {
 	int i = 0;
 	NODE* temp = (NODE*)malloc(sizeof(NODE));
 	if (temp == NULL)
 	{
 		printf("创建内存失败\r\n");
+		return 0;
 		exit(-1);
 	}
 	temp->m_data = num;
@@ -143,14 +121,15 @@ void insert_list(NODE* p, int pos, int num)
 	}
 	temp->pNext = p->pNext;
 	p->pNext = temp;
+	return 1;
 }
-void sort_list(NODE* p)
+bool sort_list(NODE* p)
 {
 	int i = 0, j = 0,len=len_list(p),change_num;
-	NODE* temp=NULL;
-	p = p->pNext;
-	for (i = 0; i < len; i++,p = p->pNext)
+	NODE* temp=NULL;	
+	for (i = 0; i < len-1; i++)
 	{		
+		p = p->pNext;
 		for (j = i + 1 ,temp = p->pNext; j < len; j++,temp = temp->pNext)
 		{
 			if (p->m_data < temp->m_data)
@@ -161,6 +140,7 @@ void sort_list(NODE* p)
 			}
 		}
 	}
+	return 1;
 }
 
 
