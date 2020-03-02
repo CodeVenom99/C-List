@@ -9,7 +9,8 @@ typedef struct NODE
 NODE* Creat_Head();//创建头节点
 bool creat_list(NODE* p,int len);//创建链表
 bool insert_list(NODE* p, int pos, int num);//插入
-bool delete_list(NODE* p,int pos,int* num);//删除链表
+bool delete_element(NODE* p,int pos,int* num);//删除链表某个元素
+bool delete_list(NODE* p);
 bool sort_list(NODE* p);//排序
 int len_list(NODE* p);//计算长度
 void show_list(NODE* p);//显示链表
@@ -19,16 +20,18 @@ void test01()
 	NODE* p= Creat_Head();
 	creat_list(p, 5);	
 	show_list(p);
+	printf("链表长度为：%d\r\n",len_list(p)); 
 	printf("------------------\r\n");
 	insert_list(p, 3,100);
 	show_list(p);
 	printf("------------------\r\n");
-	delete_list(p,3,&num);
+	delete_element(p,7,&num);
 	show_list(p);
 	printf("------------------\r\n");
 	sort_list(p);
 	show_list(p);
 	printf("------------------\r\n");
+	delete_list(p);
 }
 int main()
 {
@@ -57,7 +60,7 @@ bool creat_list(NODE* p,int len)
 			printf("创建内存失败\r\n");
 			exit(-1);
 		}
-		temp->m_data = rand()%10;
+		temp->m_data = i;
 		temp->pNext = NULL;
 		p->pNext = temp;
 		p = p->pNext;
@@ -65,31 +68,45 @@ bool creat_list(NODE* p,int len)
 	return 1;
 
 }
+bool delete_list(NODE* p)
+{
+	NODE* pHead = p->pNext,*temp;
+	while (pHead != NULL)
+	{
+		temp = pHead->pNext;
+		free(pHead);
+		pHead = temp;
+	}
+	p->pNext = NULL;
+	return 1;
+}
 void show_list(NODE* p)
 {
-	while (p->pNext != NULL)
+	NODE* temp = p->pNext;
+	while (temp != NULL)
 	{
-		printf("%d\r\n", p->pNext->m_data);
-		p = p->pNext;
+		printf("%d\r\n", temp->m_data);
+		temp = temp->pNext;
 	}
 }
 int len_list(NODE* p)
 {
 	int cout = 0;
-	while (p->pNext != NULL)
+	NODE* temp = p->pNext;
+	while (temp != NULL)
 	{
-		p = p->pNext;
+		temp = temp->pNext;
 		cout++;
 	}
 	return cout;
 }
-bool delete_list(NODE* p,int pos,int* num)//pos从1开始,差个存储数据
+bool delete_element(NODE* p,int pos,int* num)//pos从1开始
 {
 	NODE* temp=NULL;
 	for (int i = 0; i < pos-1; i++)//最后p指向pos-1
 	{
 		p = p->pNext;
-		if (p->pNext== NULL)
+		if (p->pNext== NULL)//pos位是不是有效结点
 		{
 			printf("链表没有这么长\r\n");
 			exit(-1);
@@ -97,7 +114,7 @@ bool delete_list(NODE* p,int pos,int* num)//pos从1开始,差个存储数据
 
 	}
 	temp = p->pNext;
-	p->pNext = p->pNext->pNext;
+	p->pNext = temp->pNext;
 	*num = temp->m_data;
 	free(temp);
 	temp = NULL;
@@ -114,10 +131,14 @@ bool insert_list(NODE* p, int pos, int num)
 		exit(-1);
 	}
 	temp->m_data = num;
-	while (p->pNext != NULL && i<pos-1)
+	for (int i = 0; i < pos - 1 && p->pNext != NULL; i++)//最后的效果是将p指向pos-1，且pos位是有效结点
 	{
 		p = p->pNext;
-		i++;
+	}
+	if (p->pNext == NULL)//pos位不是有效结点
+	{
+		printf("链表没有这么长\r\n");
+		exit(-1);
 	}
 	temp->pNext = p->pNext;
 	p->pNext = temp;
